@@ -57,6 +57,7 @@ public final class GameRendererPatch {
 
     @Inject(method = "render", desc = "(Lnet/minecraft/client/DeltaTracker;Z)V",
             at = @At(value = At.Type.INVOKE, method = "net/minecraft/client/gui/Gui",
+                    name = "render",
                     desc = "(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", ordinal = 0))
     public static void injectRender2DEvent(GameRenderer self, DeltaTracker deltaTracker, boolean renderLevel,
                                            CallbackInfo ci) {

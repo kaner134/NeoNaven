@@ -398,6 +398,8 @@ final class PatchApplier {
         for (AbstractInsnNode insn : method.instructions) {
             if (insn instanceof MethodInsnNode call
                     && (binding.invokeOwner.isEmpty() || call.owner.equals(binding.invokeOwner))
+                    && (binding.invokeName == null || binding.invokeName.isEmpty()
+                        || call.name.equals(binding.invokeName))
                     && call.desc.equals(binding.invokeDesc)) {
                 calls.add(call);
             }
@@ -619,6 +621,7 @@ final class PatchApplier {
             }
             case INVOKE -> {
                 String owner = AsmSupport.normalizeOwner(at.method());
+                String name = at.name().trim();
                 String desc = at.desc().trim();
                 if (desc.isEmpty()) {
                     throw new PatchException("@At(INVOKE) requires desc()");
@@ -628,6 +631,7 @@ final class PatchApplier {
                 for (AbstractInsnNode insn : method.instructions) {
                     if (insn instanceof MethodInsnNode call
                             && (owner.isEmpty() || call.owner.equals(owner))
+                            && (name.isEmpty() || call.name.equals(name))
                             && call.desc.equals(desc)) {
                         if (seen == ordinal) {
                             out.add(new Site(insn));

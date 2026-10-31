@@ -163,6 +163,28 @@ NavenLoader.exe
 | RenderPipelines | mod bus 注册 | 反射写 `RenderPipelines.PIPELINES_BY_LOCATION` + `precompilePipeline` |
 | 客户端构造 | `Minecraft.<init>` 的 mixin 调 `Naven.modRegister()` | 注入时在补丁生效前直接调用 |
 
+## 配置文件位置
+
+配置写在 **C 盘用户目录**，和 OpenZen 的 `~/.zen` 一致：
+
+```
+C:\Users\<用户名>\.naven\
+  modules.cfg  values.cfg  clickgui.cfg  friend.cfg
+  killsays.cfg spammers.cfg proxy.cfg
+```
+
+首次启动时如果检测到旧版 `%APPDATA%\<磁盘序列号哈希>\` 目录，会自动把 `*.cfg` 迁移过来。
+
+## 修复记录（相对上游 mod 形态）
+
+- **注入点按方法名匹配**：引擎原来只按 `owner + descriptor + ordinal` 定位调用，遇到同一类里多个 `()Z` 方法就会钩错。
+  `@At` 增加 `name()`、`@Redirect` 增加 `targetName()`，全部 patch 改成显式方法名。
+  典型受害点：`LocalPlayer.aiStep` 里的 `isUsingItem()` 被误当成 `isPassenger()`（导致移动/减速逻辑错乱）。
+- **KillAura 攻击距离**：原实现依赖 `mc.hitResult`，而原版 pick 只到实体交互距离（≈3 格），导致"贴身才打"。
+  现在直接对选中的目标攻击，判定用眼睛到碰撞箱最近点的距离 ≤ **3.0 格** + 视线检测。
+- **RotationManager 空指针**：`RotationUtils` 在首次 tick / 重生后读取 `lastRotations` 没有判空，启用 KillAura 会刷 NPE，已加兜底。
+- 注入器：DLL 内嵌为 RCDATA，单文件即可注入；完成后自动退出。
+
 ## 日志与排错
 
 | 文件 | 内容 |

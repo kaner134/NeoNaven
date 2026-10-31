@@ -16,7 +16,8 @@ public final class ItemPatch {
     // its original ordinal. ItemXRotPatch is registered afterwards and takes the remaining call.
     @Redirect(method = "getPlayerPOVHitResult",
             desc = "(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/ClipContext$Fluid;)Lnet/minecraft/world/phys/BlockHitResult;",
-            target = "net/minecraft/world/entity/player/Player", targetDesc = "()F", ordinal = 1)
+            target = "net/minecraft/world/entity/player/Player", targetName = "getYRot",
+            targetDesc = "()F", ordinal = 0)
     public static float hookRayTraceYRot(Player instance) {
         EventUseItemRayTrace event = new EventUseItemRayTrace(instance.getYRot(), instance.getXRot());
         Naven.getInstance().getEventManager().call(event);

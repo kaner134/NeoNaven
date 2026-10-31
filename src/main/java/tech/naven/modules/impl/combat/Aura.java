@@ -294,11 +294,17 @@ public class Aura extends Module {
       return this.canAttackTarget() && isSprintReleaseWindow();
    }
 
+   /** Vanilla attack reach, measured from the eyes to the closest point of the hitbox. */
+   private static final double ATTACK_RANGE = 3.0;
+
    private boolean canAttackTarget() {
-      return target != null
-         && mc.player != null
-         && target.getBoundingBox().distanceToSqr(mc.player.position()) <= 12.25
-         && mc.player.hasLineOfSight(target);
+      if (target == null || mc.player == null) {
+         return false;
+      }
+
+      Vec3 eye = mc.player.getEyePosition();
+      Vec3 closest = RotationUtils.getClosestPoint(eye, target.getBoundingBox());
+      return closest.distanceTo(eye) <= ATTACK_RANGE && mc.player.hasLineOfSight(target);
    }
 
    @EventTarget
@@ -430,9 +436,14 @@ public class Aura extends Module {
                   }
                }
             }
-         } else if (hitResult.getType() == Type.ENTITY) {
-            EntityHitResult result = (EntityHitResult)hitResult;
-            this.attackEntity(result.getEntity());
+         } else if (hitResult.getType() == Type.ENTITY
+               && this.targets.contains(((EntityHitResult)hitResult).getEntity())) {
+            this.attackEntity(((EntityHitResult)hitResult).getEntity());
+         } else if (this.target != null && this.canAttackTarget()) {
+            // The vanilla pick ray only reaches the entity interaction range (~3 blocks), so
+            // depending on mc.hitResult made the aura silent until the target walked into that
+            // tiny sphere. Attack the selected target directly once it is inside reach + LOS.
+            this.attackEntity(this.target);
          }
       }
    }

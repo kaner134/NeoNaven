@@ -23,7 +23,8 @@ import tech.naven.patch.api.Redirect;
 public final class ItemInHandRendererOffHandPatch {
     @Redirect(method = "tick", desc = "()V",
             target = "net/minecraft/client/player/LocalPlayer",
-            targetDesc = "()Lnet/minecraft/world/item/ItemStack;", ordinal = 1)
+            targetName = "getOffhandItem",
+            targetDesc = "()Lnet/minecraft/world/item/ItemStack;", ordinal = 0)
     public static ItemStack hookOffHand(ItemInHandRenderer self, LocalPlayer player) {
         EventUpdateHeldItem event = new EventUpdateHeldItem(InteractionHand.OFF_HAND, player.getOffhandItem());
         if (player == Minecraft.getInstance().player) {

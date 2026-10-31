@@ -23,6 +23,7 @@ public final class PlayerTabOverlayPatch {
     @Redirect(method = "render",
             desc = "(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V",
             target = "net/minecraft/client/gui/Font",
+            targetName = "split",
             targetDesc = "(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;", ordinal = 0)
     public static List<FormattedCharSequence> hookHeader(PlayerTabOverlay self, Font instance, FormattedText pText,
                                                          int pMaxWidth) {
@@ -35,6 +36,7 @@ public final class PlayerTabOverlayPatch {
     @Redirect(method = "render",
             desc = "(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V",
             target = "net/minecraft/client/gui/components/PlayerTabOverlay",
+            targetName = "getNameForDisplay",
             targetDesc = "(Lnet/minecraft/client/multiplayer/PlayerInfo;)Lnet/minecraft/network/chat/Component;",
             ordinal = 0)
     public static Component hookName(PlayerTabOverlay self, PlayerTabOverlay instance, PlayerInfo pPlayerInfo) {

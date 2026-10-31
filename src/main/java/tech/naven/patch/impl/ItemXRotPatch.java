@@ -19,7 +19,8 @@ import tech.naven.patch.api.Redirect;
 public final class ItemXRotPatch {
     @Redirect(method = "getPlayerPOVHitResult",
             desc = "(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/ClipContext$Fluid;)Lnet/minecraft/world/phys/BlockHitResult;",
-            target = "net/minecraft/world/entity/player/Player", targetDesc = "()F", ordinal = 0)
+            target = "net/minecraft/world/entity/player/Player", targetName = "getXRot",
+            targetDesc = "()F", ordinal = 0)
     public static float hookRayTraceXRot(Player instance) {
         EventUseItemRayTrace event = new EventUseItemRayTrace(instance.getYRot(), instance.getXRot());
         Naven.getInstance().getEventManager().call(event);

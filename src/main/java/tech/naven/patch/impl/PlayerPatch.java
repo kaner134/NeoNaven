@@ -19,7 +19,8 @@ import tech.naven.patch.api.Redirect;
 public final class PlayerPatch {
     // Player.()F occurs 7 times in attack: getSpeed() (ordinal 0) then getYRot() x6 (ordinal 1..).
     @Redirect(method = "attack", desc = "(Lnet/minecraft/world/entity/Entity;)V",
-            target = "net/minecraft/world/entity/player/Player", targetDesc = "()F", ordinal = 1)
+            target = "net/minecraft/world/entity/player/Player", targetName = "getYRot",
+            targetDesc = "()F", ordinal = 0)
     public static float hookFixRotation(Player self, Player instance) {
         EventAttackYaw event = new EventAttackYaw(instance.getYRot());
         Naven.getInstance().getEventManager().call(event);
@@ -28,6 +29,7 @@ public final class PlayerPatch {
 
     @Redirect(method = "attack", desc = "(Lnet/minecraft/world/entity/Entity;)V",
             target = "net/minecraft/world/entity/player/Player",
+            targetName = "setDeltaMovement",
             targetDesc = "(Lnet/minecraft/world/phys/Vec3;)V", ordinal = 0)
     public static void hookSetDeltaMovement(Player self, Player instance, Vec3 vec3) {
         EventAttackSlowdown event = new EventAttackSlowdown();
@@ -38,7 +40,8 @@ public final class PlayerPatch {
     }
 
     @Redirect(method = "attack", desc = "(Lnet/minecraft/world/entity/Entity;)V",
-            target = "net/minecraft/world/entity/player/Player", targetDesc = "(Z)V", ordinal = 0)
+            target = "net/minecraft/world/entity/player/Player", targetName = "setSprinting",
+            targetDesc = "(Z)V", ordinal = 0)
     public static void hookSetSprinting(Player self, Player instance, boolean sprinting) {
         EventAttackSlowdown event = new EventAttackSlowdown();
         Naven.getInstance().getEventManager().call(event);

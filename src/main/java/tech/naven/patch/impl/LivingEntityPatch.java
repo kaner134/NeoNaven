@@ -23,7 +23,8 @@ import tech.naven.patch.api.Redirect;
 public final class LivingEntityPatch {
     // LivingEntity.()F occurs twice in jumpFromGround: getJumpPower() (ordinal 0) then getYRot() (ordinal 1).
     @Redirect(method = "jumpFromGround", desc = "()V",
-            target = "net/minecraft/world/entity/LivingEntity", targetDesc = "()F", ordinal = 1)
+            target = "net/minecraft/world/entity/LivingEntity", targetName = "getYRot",
+            targetDesc = "()F", ordinal = 0)
     public static float modifyJumpYaw(LivingEntity self, LivingEntity entity) {
         EventJump event = new EventJump(entity.getYRot());
         Naven.getInstance().getEventManager().call(event);
@@ -32,8 +33,9 @@ public final class LivingEntityPatch {
 
     @Redirect(method = "updateFallFlyingMovement",
             desc = "(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;",
-            target = "net/minecraft/world/entity/LivingEntity", targetDesc = "()F", ordinal = 0)
-    public static float hookModifyFallFlyingPitch(LivingEntity self, LivingEntity instance) {
+            target = "net/minecraft/world/entity/LivingEntity", targetName = "getXRot",
+            targetDesc = "()F", ordinal = 0)
+    public static float hookModifyFallingPitch(LivingEntity self, LivingEntity instance) {
         EventFallFlying event = new EventFallFlying(instance.getXRot());
         Naven.getInstance().getEventManager().call(event);
         return event.getPitch();
@@ -58,7 +60,8 @@ public final class LivingEntityPatch {
     }
 
     @Redirect(method = "tickHeadTurn", desc = "(F)V",
-            target = "net/minecraft/world/entity/LivingEntity", targetDesc = "()F", ordinal = 0)
+            target = "net/minecraft/world/entity/LivingEntity", targetName = "getYRot",
+            targetDesc = "()F", ordinal = 0)
     public static float modifyHeadYaw(LivingEntity self, LivingEntity entity) {
         if (entity == Minecraft.getInstance().player) {
             EventRotationAnimation event = new EventRotationAnimation(entity.getYRot(), 0.0F, 0.0F, 0.0F);

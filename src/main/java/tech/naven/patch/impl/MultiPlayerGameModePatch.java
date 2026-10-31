@@ -27,6 +27,7 @@ public final class MultiPlayerGameModePatch {
     @Redirect(method = "startPrediction",
             desc = "(Lnet/minecraft/client/multiplayer/ClientLevel;Lnet/minecraft/client/multiplayer/prediction/PredictiveAction;)V",
             target = "net/minecraft/client/multiplayer/ClientPacketListener",
+            targetName = "send",
             targetDesc = "(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 0)
     public static void onSendPacket(MultiPlayerGameMode self, ClientPacketListener instance, Packet<?> pPacket) {
         if (pPacket instanceof ServerboundUseItemPacket) {

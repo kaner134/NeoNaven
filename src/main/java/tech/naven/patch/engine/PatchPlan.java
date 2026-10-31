@@ -51,6 +51,7 @@ final class PatchPlan {
         Type ciValueType;
         Type ciPrimitiveType;
         String invokeOwner;
+        String invokeName;
         String invokeDesc;
         int ordinal;
         int varIndex;
@@ -201,8 +202,14 @@ final class PatchPlan {
                 }
                 binding.ciPrimitiveType = primitiveOf(binding.ciValueType);
             }
-            if (binding.at.value() == At.Type.INVOKE && binding.at.desc().isEmpty()) {
-                throw new PatchException("@At(INVOKE) requires desc()");
+            if (binding.at.value() == At.Type.INVOKE) {
+                if (binding.at.desc().isEmpty()) {
+                    throw new PatchException("@At(INVOKE) requires desc()");
+                }
+                binding.invokeOwner = AsmSupport.normalizeOwner(binding.at.method());
+                binding.invokeName = binding.at.name().trim();
+                binding.invokeDesc = binding.at.desc().trim();
+                binding.ordinal = binding.at.ordinal();
             }
             checkDescReturnType(binding);
         } else if (redirect != null) {
@@ -210,6 +217,7 @@ final class PatchPlan {
             binding.targetName = redirect.method();
             binding.explicitDesc = emptyToNull(redirect.desc());
             binding.invokeOwner = AsmSupport.normalizeOwner(redirect.target());
+            binding.invokeName = redirect.targetName().trim();
             binding.invokeDesc = redirect.targetDesc().trim();
             binding.ordinal = redirect.ordinal();
             if (binding.invokeDesc.isEmpty()) {

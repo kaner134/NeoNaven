@@ -50,6 +50,7 @@ public final class GuiPatch {
     @Redirect(method = "displayScoreboardSidebar",
             desc = "(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V",
             target = "net/minecraft/client/gui/GuiGraphics",
+            targetName = "drawString",
             targetDesc = "(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V", ordinal = 2)
     public static void hookRenderScore(Gui self, GuiGraphics instance, Font pFont, Component pText, int pX, int pY,
                                        int pColor, boolean pDropShadow) {
@@ -62,6 +63,7 @@ public final class GuiPatch {
     @Redirect(method = "lambda$displayScoreboardSidebar$17",
             desc = "(Lnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/network/chat/numbers/NumberFormat;Lnet/minecraft/world/scores/PlayerScoreEntry;)Lnet/minecraft/client/gui/Gui$1DisplayEntry;",
             target = "net/minecraft/world/scores/PlayerTeam",
+            targetName = "formatNameForTeam",
             targetDesc = "(Lnet/minecraft/world/scores/Team;Lnet/minecraft/network/chat/Component;)Lnet/minecraft/network/chat/MutableComponent;",
             ordinal = 0)
     public static MutableComponent hookScoreboardName(Gui self, Team pPlayerTeam, Component pPlayerName) {
@@ -73,7 +75,7 @@ public final class GuiPatch {
 
     @Redirect(method = "displayScoreboardSidebar",
             desc = "(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V",
-            target = "net/minecraft/world/scores/Objective",
+            target = "net/minecraft/world/scores/Objective", targetName = "getDisplayName",
             targetDesc = "()Lnet/minecraft/network/chat/Component;", ordinal = 0)
     public static Component hookScoreboardTitle(Gui self, Objective instance) {
         Component component = instance.getDisplayName();

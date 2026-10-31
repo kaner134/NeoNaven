@@ -90,11 +90,38 @@ public class FileManager {
    }
 
    static {
-      List<HWDiskStore> diskStores = new SystemInfo().getHardware().getDiskStores();
-      clientFolder = new File(
-         System.getenv("APPDATA")
-            + "\\"
-            + DigestUtils.md5Hex((diskStores.isEmpty() ? "NO_DISK_FOUND" : diskStores.get(0).getSerial()).getBytes(StandardCharsets.UTF_8))
-      );
+      // Configs live in the user profile on C:, like OpenZen's ~/.zen - no HWID directory.
+      clientFolder = new File(System.getProperty("user.home"), ".naven");
+      if (!clientFolder.exists()) {
+         clientFolder.mkdirs();
+         migrateLegacyFolder();
+      }
+   }
+
+   /** One-time copy from the old %APPDATA%\<disk-hash> layout. */
+   private static void migrateLegacyFolder() {
+      try {
+         String appData = System.getenv("APPDATA");
+         if (appData == null) {
+            return;
+         }
+         List<HWDiskStore> diskStores = new SystemInfo().getHardware().getDiskStores();
+         String serial = diskStores.isEmpty() ? "NO_DISK_FOUND" : diskStores.get(0).getSerial();
+         File legacy = new File(appData, DigestUtils.md5Hex(serial.getBytes(StandardCharsets.UTF_8)));
+         if (!legacy.isDirectory()) {
+            return;
+         }
+         File[] files = legacy.listFiles((dir, name) -> name.endsWith(".cfg"));
+         if (files == null) {
+            return;
+         }
+         for (File file : files) {
+            Files.copy(file.toPath(), new File(clientFolder, file.getName()).toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+         }
+         logger.info("Migrated {} config file(s) from {}", files.length, legacy);
+      } catch (Throwable t) {
+         logger.warn("Legacy config migration skipped: {}", t.toString());
+      }
    }
 }

@@ -14,6 +14,14 @@ public @interface At {
     /** For {@link Type#INVOKE}: internal owner name, e.g. {@code net/minecraft/client/player/LocalPlayer}. */
     String method() default "";
 
+    /**
+     * For {@link Type#INVOKE}: invoked method name. Strongly recommended whenever the owner
+     * declares several methods with the same descriptor - matching on owner+desc alone picks
+     * the wrong call site (that is how {@code isPassenger()} was once mistaken for
+     * {@code isUsingItem()}).
+     */
+    String name() default "";
+
     /** For {@link Type#INVOKE}: invocation descriptor, e.g. {@code ()Z}. */
     String desc() default "";
 

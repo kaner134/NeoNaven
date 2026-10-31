@@ -19,6 +19,7 @@ import tech.naven.patch.api.Patch;
 public final class MouseHandlerPatch {
     @Inject(method = "onButton", desc = "(JLnet/minecraft/client/input/MouseButtonInfo;I)V",
             at = @At(value = At.Type.INVOKE, method = "net/minecraft/client/KeyMapping",
+                    name = "set",
                     desc = "(Lcom/mojang/blaze3d/platform/InputConstants$Key;Z)V", ordinal = 0))
     public static void onPress(MouseHandler self, long window, MouseButtonInfo buttonInfo, int action,
                                CallbackInfo ci) {

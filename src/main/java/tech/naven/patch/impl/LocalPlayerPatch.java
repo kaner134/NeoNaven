@@ -36,7 +36,7 @@ import tech.naven.patch.api.Redirect;
 public final class LocalPlayerPatch {
     @Inject(method = "tick", desc = "()V",
             at = @At(value = At.Type.INVOKE, method = "net/minecraft/client/player/AbstractClientPlayer",
-                    desc = "()V", ordinal = 0))
+                    name = "tick", desc = "()V", ordinal = 0))
     public static void injectUpdateEvent(LocalPlayer self, CallbackInfo ci) {
         Naven.getInstance().getEventManager().call(new EventUpdate());
         Naven.getInstance().getEventManager().call(new EventSprint());
@@ -114,10 +114,12 @@ public final class LocalPlayerPatch {
         }
     }
 
-    // aiStep makes 22 LocalPlayer.()Z calls; isUsingItem() is the 5th (ordinal 4):
-    // isSwimming, isPassenger, isShiftKeyDown, isSleeping, isUsingItem, ...
+    // Match by method NAME: aiStep contains many LocalPlayer.()Z calls (jump, shift,
+    // isPassenger, isShiftKeyDown, isSleeping, isUsingItem, ...), so owner+desc+ordinal is
+    // not precise enough - it previously redirected isPassenger() by mistake.
     @Redirect(method = "aiStep", desc = "()V",
-            target = "net/minecraft/client/player/LocalPlayer", targetDesc = "()Z", ordinal = 4)
+            target = "net/minecraft/client/player/LocalPlayer", targetName = "isUsingItem",
+            targetDesc = "()Z", ordinal = 0)
     public static boolean onSlowdown(LocalPlayer self, LocalPlayer localPlayer) {
         EventSlowdown event = new EventSlowdown(localPlayer.isUsingItem());
         Naven.getInstance().getEventManager().call(event);

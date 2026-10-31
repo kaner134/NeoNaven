@@ -18,7 +18,7 @@ import tech.naven.utils.BlinkingPlayer;
 public final class ProjectileUtilPatch {
     @Redirect(method = "getEntityHitResult",
             desc = "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;",
-            target = "net/minecraft/world/level/Level",
+            target = "net/minecraft/world/level/Level", targetName = "getEntities",
             targetDesc = "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;",
             ordinal = 0)
     public static List<Entity> hook(Level instance, Entity pEntity, AABB pBoundingBox,

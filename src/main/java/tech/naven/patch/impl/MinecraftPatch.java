@@ -99,8 +99,8 @@ public final class MinecraftPatch {
     }
 
     @Inject(method = "handleKeybinds", desc = "()V",
-            at = @At(value = At.Type.INVOKE, method = "net/minecraft/client/player/LocalPlayer", desc = "()Z",
-                    ordinal = 0),
+            at = @At(value = At.Type.INVOKE, method = "net/minecraft/client/player/LocalPlayer",
+                    name = "isUsingItem", desc = "()Z", ordinal = 0),
             cancellable = true)
     public static void clickEvent(Minecraft self, CallbackInfo ci) {
         if (Naven.getInstance() != null && Naven.getInstance().getEventManager() != null) {

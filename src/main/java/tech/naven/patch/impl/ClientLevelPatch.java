@@ -14,7 +14,8 @@ public final class ClientLevelPatch {
     // Entity.()V occurs twice in the method body: setOldPosAndRot() then tick().
     // The injected invocation is selected by owner + descriptor only, so tick() is ordinal 1.
     @Redirect(method = "tickNonPassenger", desc = "(Lnet/minecraft/world/entity/Entity;)V",
-            target = "net/minecraft/world/entity/Entity", targetDesc = "()V", ordinal = 1)
+            target = "net/minecraft/world/entity/Entity", targetName = "tick",
+            targetDesc = "()V", ordinal = 0)
     public static void hookSkipTicks(ClientLevel self, Entity instance) {
         if (Naven.skipTicks > 0 && instance == Minecraft.getInstance().player) {
             Naven.skipTicks--;

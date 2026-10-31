@@ -25,6 +25,7 @@ public final class PlayerTabOverlayFooterPatch {
     @Redirect(method = "render",
             desc = "(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V",
             target = "net/minecraft/client/gui/Font",
+            targetName = "split",
             targetDesc = "(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;", ordinal = 1)
     public static List<FormattedCharSequence> hookFooter(PlayerTabOverlay self, Font instance, FormattedText pText,
                                                          int pMaxWidth) {

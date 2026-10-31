@@ -19,6 +19,7 @@ public final class ItemInHandRendererPatch {
     // handler sees a single remaining match (ordinal 0).
     @Redirect(method = "tick", desc = "()V",
             target = "net/minecraft/client/player/LocalPlayer",
+            targetName = "getMainHandItem",
             targetDesc = "()Lnet/minecraft/world/item/ItemStack;", ordinal = 0)
     public static ItemStack hookMainHand(ItemInHandRenderer self, LocalPlayer player) {
         EventUpdateHeldItem event = new EventUpdateHeldItem(InteractionHand.MAIN_HAND, player.getMainHandItem());

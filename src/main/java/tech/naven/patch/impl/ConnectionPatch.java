@@ -54,6 +54,7 @@ public final class ConnectionPatch {
     @Redirect(method = "channelRead0",
             desc = "(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V",
             target = "net/minecraft/network/Connection",
+            targetName = "genericsFtw",
             targetDesc = "(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;)V",
             ordinal = 0)
     public static void onGenericsFtw(Connection self, Packet<?> pPacket, PacketListener pListener) {
@@ -69,6 +70,7 @@ public final class ConnectionPatch {
     @Redirect(method = "send",
             desc = "(Lnet/minecraft/network/protocol/Packet;Lio/netty/channel/ChannelFutureListener;Z)V",
             target = "net/minecraft/network/Connection",
+            targetName = "sendPacket",
             targetDesc = "(Lnet/minecraft/network/protocol/Packet;Lio/netty/channel/ChannelFutureListener;Z)V",
             ordinal = 0)
     public static void onSend(Connection self, Connection receiver, Packet<?> pInPacket,

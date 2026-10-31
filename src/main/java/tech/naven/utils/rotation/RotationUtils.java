@@ -236,7 +236,11 @@ public class RotationUtils {
                eyePos,
                location,
                location.distanceTo(eyePos),
-               getFixedRotation(bruteRotations.getYaw(), bruteRotations.getPitch(), RotationManager.lastRotations.x, RotationManager.lastRotations.y)
+               getFixedRotation(bruteRotations.getYaw(), bruteRotations.getPitch(),
+                  RotationManager.lastRotations == null ? bruteRotations.getYaw()
+                                                         : RotationManager.lastRotations.x,
+                  RotationManager.lastRotations == null ? bruteRotations.getPitch()
+                                                         : RotationManager.lastRotations.y)
             );
          }
       }

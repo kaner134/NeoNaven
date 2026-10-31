@@ -28,7 +28,7 @@ public final class LivingEntityRendererPatch {
 
     @Redirect(method = "extractRenderState",
             desc = "(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V",
-            target = "net/minecraft/util/Mth", targetDesc = "(FFF)F", ordinal = 0)
+            target = "net/minecraft/util/Mth", targetName = "rotLerp", targetDesc = "(FFF)F", ordinal = 0)
     public static float rotAnimationYaw(LivingEntityRenderer<?, ?, ?> self, float pDelta, float pStart, float pEnd) {
         if (EventRotationAnimation.currentEntity != Minecraft.getInstance().player) {
             return Mth.rotLerp(pDelta, pStart, pEnd);
@@ -41,7 +41,8 @@ public final class LivingEntityRendererPatch {
 
     @Redirect(method = "extractRenderState",
             desc = "(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V",
-            target = "net/minecraft/world/entity/LivingEntity", targetDesc = "(F)F", ordinal = 0)
+            target = "net/minecraft/world/entity/LivingEntity", targetName = "getXRot",
+            targetDesc = "(F)F", ordinal = 0)
     public static float rotAnimationPitch(LivingEntityRenderer<?, ?, ?> self, LivingEntity instance,
                                           float pPartialTicks) {
         float pitch = instance.getXRot(pPartialTicks);

@@ -43,7 +43,7 @@ public final class EntityPatch {
 
     /** Replaces @ModifyArg(index = 2) on getInputVector. */
     @Redirect(method = "moveRelative", desc = "(FLnet/minecraft/world/phys/Vec3;)V",
-            target = "net/minecraft/world/entity/Entity",
+            target = "net/minecraft/world/entity/Entity", targetName = "getInputVector",
             targetDesc = "(Lnet/minecraft/world/phys/Vec3;FF)Lnet/minecraft/world/phys/Vec3;", ordinal = 0)
     public static Vec3 modifyYaw(Entity self, Vec3 pos, float speed, float yaw) {
         EventStrafe strafe = new EventStrafe(yaw);

@@ -23,6 +23,9 @@ public @interface Redirect {
     /** Internal owner name of the redirected invocation. */
     String target();
 
+    /** Name of the redirected invocation; empty means "any name with this owner+descriptor". */
+    String targetName() default "";
+
     /** Descriptor of the redirected invocation. */
     String targetDesc();
 
