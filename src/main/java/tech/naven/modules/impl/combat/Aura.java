@@ -88,6 +88,8 @@ public class Aura extends Module {
    BooleanValue preferBaby = ValueBuilder.create(this, "Prefer Baby").setDefaultBooleanValue(false).build().getBooleanValue();
    BooleanValue moreParticles = ValueBuilder.create(this, "More Particles").setDefaultBooleanValue(false).build().getBooleanValue();
    BooleanValue keepSprint = ValueBuilder.create(this, "Keep Sprint").setDefaultBooleanValue(true).build().getBooleanValue();
+   /** 1.9 style: only attack when the vanilla attack cooldown is fully charged. */
+   BooleanValue cooldown19 = ValueBuilder.create(this, "1.9 Cooldown").setDefaultBooleanValue(false).build().getBooleanValue();
    private boolean sprintCancelled;
    FloatValue aimRange = ValueBuilder.create(this, "Aim Range")
       .setDefaultFloatValue(5.0F)
@@ -384,7 +386,9 @@ public class Aura extends Module {
          }
 
          target = targets.get(this.index);
-         this.attacks = this.attacks + this.aps.getCurrentValue() / 20.0F;
+         if (!this.cooldown19.getCurrentValue()) {
+            this.attacks = this.attacks + this.aps.getCurrentValue() / 20.0F;
+         }
       }
    }
 
@@ -395,9 +399,17 @@ public class Aura extends Module {
          && Naven.skipTasks.isEmpty()
          && !NetworkUtils.isServerLag()
          && !Naven.getInstance().getModuleManager().getModule(Blink.class).isEnabled()) {
-         while (this.attacks >= 1.0F) {
-            this.doAttack();
-            this.attacks--;
+         if (this.cooldown19.getCurrentValue()) {
+            // 1.9+ cooldown mode: one attack per fully charged swing, APS is ignored.
+            this.attacks = 0.0F;
+            if (mc.player.getAttackStrengthScale(0.5F) >= 1.0F) {
+               this.doAttack();
+            }
+         } else {
+            while (this.attacks >= 1.0F) {
+               this.doAttack();
+               this.attacks--;
+            }
          }
       }
    }

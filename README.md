@@ -184,6 +184,8 @@ C:\Users\<用户名>\.naven\
   现在直接对选中的目标攻击，判定用眼睛到碰撞箱最近点的距离 ≤ **3.0 格** + 视线检测。
 - **RotationManager 空指针**：`RotationUtils` 在首次 tick / 重生后读取 `lastRotations` 没有判空，启用 KillAura 会刷 NPE，已加兜底。
 - 注入器：DLL 内嵌为 RCDATA，单文件即可注入；完成后自动退出。
+- **KillAura 新增 `1.9 Cooldown` 开关**：开启后不再按 APS 累积出手，而是等原版攻击冷却
+  (`getAttackStrengthScale(0.5) >= 1.0`) 充满才攻击一次；关闭时保持原来的 APS 模式。
 
 ## 日志与排错
 
