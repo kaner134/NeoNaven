@@ -1,0 +1,6 @@
+#include "resource.h"
+
+// Both jars are staged next to the build tree by dll/CMakeLists.txt; rc.exe
+// finds them through the /I flag that CMake passes for this file.
+IDR_NAVEN_JAR        RCDATA "naven.jar"
+IDR_NAVEN_AGENT_JAR  RCDATA "naven-agent.jar"

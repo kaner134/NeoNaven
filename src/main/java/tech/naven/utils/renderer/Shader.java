@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.joml.Matrix4f;
+import tech.naven.inject.Resources;
 
 public class Shader {
    public static Shader BOUND;
@@ -38,11 +39,14 @@ public class Shader {
    }
 
    private String read(String path) {
+      // Injected form: our classes live in the game class loader, so the jar is not a class path root any more.
+      // Resources reads the entry straight out of the mod jar (see tech.naven.inject.Resources).
+      // A missing shader source is fatal for the effect, exactly like the NPE the old getResourceAsStream(null)
+      // produced, but with an actionable message.
       try {
-         return IOUtils.toString(this.getClass().getResourceAsStream("/assets/heypixel/VcX6svVqmeT8/shader/" + path), StandardCharsets.UTF_8);
-      } catch (IOException var3) {
-         var3.printStackTrace();
-         return "";
+         return IOUtils.toString(Resources.open("/assets/heypixel/VcX6svVqmeT8/shader/" + path), StandardCharsets.UTF_8);
+      } catch (IOException e) {
+         throw new IllegalStateException("Missing shader source: /assets/heypixel/VcX6svVqmeT8/shader/" + path, e);
       }
    }
 

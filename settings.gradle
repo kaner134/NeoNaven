@@ -1,5 +1,10 @@
 pluginManagement {
     repositories {
+        // ForgeCDN mirror first: maven.neoforged.net is often unreachable from CN.
+        maven {
+            name = 'NeoForgedCDN'
+            url = 'https://neoforged.forgecdn.net/releases'
+        }
         gradlePluginPortal()
         maven {
             name = 'NeoForged'

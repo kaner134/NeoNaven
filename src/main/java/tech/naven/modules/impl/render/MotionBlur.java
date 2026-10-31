@@ -37,6 +37,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StrictJsonParser;
 import org.slf4j.Logger;
+import tech.naven.inject.Resources;
 
 @ModuleInfo(
    name = "MotionBlur",
@@ -153,6 +154,14 @@ public class MotionBlur extends Module {
 
    private boolean validateConfig(Minecraft mc) {
       Optional<Resource> resource = mc.getResourceManager().getResource(CONFIG_FILE);
+      if (resource.isEmpty()) {
+         // Injected form: the mod jar is not registered as a built-in resource pack by FML, so the
+         // minecraft:post_effect/motion_blur.json (and the glsl next to it) can be invisible after a reload that
+         // replaced the MultiPackResourceManager. Re-inject the pack once and retry before giving up.
+         Resources.registerPack();
+         resource = mc.getResourceManager().getResource(CONFIG_FILE);
+      }
+
       if (resource.isEmpty()) {
          LOGGER.error("[MotionBlur] post effect {} is missing from the mod resources", CONFIG_FILE);
          return false;

@@ -16,6 +16,34 @@ base {
 }
 tasks.named('jar', Jar) {
     archiveFileName = 'Naven.jar'
+    manifest {
+        attributes(
+                'Implementation-Title'   : project.name,
+                'Implementation-Version' : project.version
+        )
+    }
+}
+
+// Tiny java-agent jar: only the stub class that receives Instrumentation from
+// instrument.dll!Agent_OnAttach. It must NOT contain the client classes - the agent jar is
+// appended to the system class loader, and the client classes have to be defined by the
+// NeoForge game class loader instead (see tech/navenboot/AgentStub).
+tasks.register('agentStubJar', Jar) {
+    group = 'naven'
+    description = 'Build the minimal java-agent jar used by Naven.dll.'
+    archiveFileName = 'NavenAgent.jar'
+    destinationDirectory = layout.buildDirectory.dir('libs')
+    from(sourceSets.main.output) {
+        include 'tech/navenboot/AgentStub.class'
+    }
+    manifest {
+        attributes(
+                'Premain-Class'           : 'tech.navenboot.AgentStub',
+                'Agent-Class'             : 'tech.navenboot.AgentStub',
+                'Can-Retransform-Classes' : 'true',
+                'Can-Redefine-Classes'    : 'true'
+        )
+    }
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -25,6 +53,13 @@ sourceSets.main.resources {
 }
 
 repositories {
+    // ForgeCDN mirror first (maven.neoforged.net frequently times out from CN).
+    // Listed before the plugin-provided repositories so artifacts resolve here first.
+    maven {
+        name = 'NeoForgedCDN'
+        url = 'https://neoforged.forgecdn.net/releases'
+    }
+    mavenCentral()
 }
 
 neoForge {
@@ -71,4 +106,42 @@ tasks.withType(JavaCompile).configureEach {
 tasks.register('extractRuntimeClasspath', Copy) {
     from configurations.runtimeClasspath
     into layout.buildDirectory.dir('runtimeClasspath')
+}
+// ============================================================================
+// DLL hot-injection build pipeline
+// ============================================================================
+//
+// The jar doubles as a Java agent: the native DLL extracts the embedded copy from its
+// own PE resources, then calls instrument.dll's Agent_OnAttach with that path. Nothing
+// here changes the normal mod jar; it just adds the agent manifest entries above and
+// stages the artifact for the resource compiler.
+
+tasks.register('stageNativeJar', Copy) {
+    group = 'naven'
+    description = 'Stage the client jar and the agent stub jar for the DLL resource compiler.'
+    dependsOn tasks.named('jar'), tasks.named('agentStubJar')
+    from(tasks.named('jar').flatMap { it.archiveFile }) { rename { 'naven.jar' } }
+    from(tasks.named('agentStubJar').flatMap { it.archiveFile }) { rename { 'naven-agent.jar' } }
+    into layout.projectDirectory.dir('native')
+}
+
+def nativeBuildBat = layout.projectDirectory.file('native/build.bat').asFile
+
+tasks.register('nativeDll', Exec) {
+    group = 'naven'
+    description = 'Compile Naven.dll (embedded agent jar) and NavenLoader.exe with MSVC + CMake.'
+    dependsOn 'stageNativeJar'
+    workingDir layout.projectDirectory.dir('native')
+    commandLine 'cmd', '/c', nativeBuildBat.absolutePath
+    doFirst {
+        if (!nativeBuildBat.isFile()) {
+            throw new GradleException('native/build.bat is missing')
+        }
+    }
+}
+
+tasks.register('dll') {
+    group = 'naven'
+    description = 'Build everything needed for DLL hot injection (DLL + injector GUI).'
+    dependsOn 'nativeDll'
 }

@@ -1,0 +1,3 @@
+# Staged agent jar: produced by the Gradle 'stageNativeJar' task. A local
+# placeholder may exist for native-only smoke builds; it is not source.
+naven.jar

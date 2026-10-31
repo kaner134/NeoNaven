@@ -1,6 +1,5 @@
 package tech.naven.utils;
 
-import tech.mixin.accessors.GameRendererAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarState;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -8,6 +7,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import tech.naven.patch.impl.accessors.GameRendererAccessors;
 
 public class ProjectionUtils {
    private static final Minecraft mc = Minecraft.getInstance();
@@ -22,7 +22,7 @@ public class ProjectionUtils {
          calculateViewBobbing(playerentity, result3f, renderPartialTicks);
       }
 
-      double fov = ((GameRendererAccessor)mc.gameRenderer).invokeGetFov(mc.getEntityRenderDispatcher().camera, renderPartialTicks, true);
+      double fov = GameRendererAccessors.invokeGetFov(mc.gameRenderer, mc.getEntityRenderDispatcher().camera, renderPartialTicks, true);
       return calculateScreenPosition(result3f, fov);
    }
 

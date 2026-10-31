@@ -75,9 +75,14 @@ public class Naven {
    }
 
    public static void modRegister() {
+      if (instance != null) {
+         return;
+      }
+
       try {
          new Naven();
       } catch (Exception var1) {
+         instance = null;
          System.err.println("Failed to load client");
          var1.printStackTrace(System.err);
       }

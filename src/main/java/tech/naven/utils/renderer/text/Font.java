@@ -16,7 +16,7 @@ import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.stb.STBTTPackedchar.Buffer;
 import org.lwjgl.system.MemoryStack;
-import tech.mixin.accessors.NativeImageAccessor;
+import tech.naven.patch.impl.accessors.NativeImageAccessors;
 
 public class Font {
    private final int height;
@@ -102,7 +102,7 @@ public class Font {
          }
 
          image = new NativeImage(NativeImage.Format.RGBA, size, size, false);
-         long pixels = ((NativeImageAccessor)(Object)image).getPixels();
+         long pixels = NativeImageAccessors.getPixels(image);
          ByteBuffer source = bitmap.duplicate();
          source.clear();
 

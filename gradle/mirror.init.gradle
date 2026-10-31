@@ -1,0 +1,28 @@
+// Optional init script that rewrites every maven.neoforged.net repository (including the
+// ones the moddev plugin adds itself) to the ForgeCDN mirror. Use it when the official
+// host is unreachable:
+//     gradlew.bat -I gradle/mirror.init.gradle dll
+// build-dll.bat already does this for you.
+def mirrorMaven = { repo ->
+    try {
+        if (repo instanceof org.gradle.api.artifacts.repositories.MavenArtifactRepository) {
+            def u = repo.url.toString()
+            if (u.contains('maven.neoforged.net')) {
+                repo.url = u.replace('maven.neoforged.net', 'neoforged.forgecdn.net')
+                println "[mirror] ${u} -> ${repo.url}"
+            }
+        }
+    } catch (Throwable ignored) { }
+}
+
+settingsEvaluated { settings ->
+    settings.pluginManagement.repositories.all(mirrorMaven)
+    settings.pluginManagement.repositories.whenObjectAdded(mirrorMaven)
+}
+
+allprojects { p ->
+    p.repositories.all(mirrorMaven)
+    p.repositories.whenObjectAdded(mirrorMaven)
+    p.buildscript.repositories.all(mirrorMaven)
+    p.buildscript.repositories.whenObjectAdded(mirrorMaven)
+}

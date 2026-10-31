@@ -10,15 +10,19 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.lwjgl.BufferUtils;
+import tech.naven.inject.Resources;
 
 public class CustomTextRenderer {
    private final Font font;
    private float alpha = 1.0F;
 
    public CustomTextRenderer(String name, int size, int from, int to, int textureSize) {
-      InputStream in = this.getClass().getResourceAsStream("/assets/heypixel/VcX6svVqmeT8/fonts/" + name + ".ttf");
-      if (in == null) {
-         throw new RuntimeException("Font not found: " + name);
+      // Injected form: the jar is not a class path root any more, read the ttf out of the mod jar instead.
+      InputStream in;
+      try {
+         in = Resources.open("/assets/heypixel/VcX6svVqmeT8/fonts/" + name + ".ttf");
+      } catch (IOException e) {
+         throw new RuntimeException("Font not found: " + name, e);
       }
 
       byte[] bytes;

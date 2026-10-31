@@ -1,16 +1,16 @@
 package tech.naven.utils;
 
-import tech.mixin.accessors.ClientLevelAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.prediction.BlockStatePredictionHandler;
 import net.minecraft.client.multiplayer.prediction.PredictiveAction;
+import tech.naven.patch.impl.accessors.ClientLevelAccessors;
 
 public class PacketUtils {
    private static final Minecraft mc = Minecraft.getInstance();
 
    public static void sendSequencedPacket(PredictiveAction packetCreator) {
       if (mc.getConnection() != null && mc.level != null) {
-         BlockStatePredictionHandler pendingUpdateManager = ((ClientLevelAccessor)mc.level).getBlockStatePredictionHandler().startPredicting();
+         BlockStatePredictionHandler pendingUpdateManager = ClientLevelAccessors.getBlockStatePredictionHandler(mc.level).startPredicting();
 
          try {
             int i = pendingUpdateManager.currentSequence();

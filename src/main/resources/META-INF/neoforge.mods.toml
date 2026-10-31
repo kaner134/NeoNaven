@@ -6,9 +6,6 @@ version="1"
 displayName="Naven-Modern"
 authors="Huty"
 description='''Naven'''
-[[mixins]]
-config="Naven-Modern.mixins.json"
-
 [[dependencies.naven]]
 modId="neoforge"
 type="required"

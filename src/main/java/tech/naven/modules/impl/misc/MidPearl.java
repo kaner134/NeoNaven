@@ -1,6 +1,5 @@
 package tech.naven.modules.impl.misc;
 
-import tech.mixin.accessors.MultiPlayerGameModeAccessor;
 import tech.naven.events.api.EventTarget;
 import tech.naven.events.api.types.EventType;
 import tech.naven.events.impl.EventRunTicks;
@@ -11,6 +10,7 @@ import tech.naven.utils.MathUtils;
 import tech.naven.utils.TimeHelper;
 import tech.naven.values.ValueBuilder;
 import tech.naven.values.impl.FloatValue;
+import tech.naven.patch.impl.accessors.MultiPlayerGameModeAccessors;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -63,7 +63,7 @@ public class MidPearl extends Module {
          if (pearlSlot != -1) {
             this.lastSlot = mc.player.getInventory().getSelectedSlot();
             mc.player.getInventory().setSelectedSlot(pearlSlot);
-            ((MultiPlayerGameModeAccessor)mc.gameMode).invokeEnsureHasSentCarriedItem();
+            MultiPlayerGameModeAccessors.invokeEnsureHasSentCarriedItem(mc.gameMode);
             mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);
             this.doWork = false;
             this.switchBack = true;
